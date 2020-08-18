@@ -2,12 +2,11 @@ package log
 
 import (
 	"context"
-
+	"pangolin/app/pangolin/utils/log/conf"
+	"pangolin/app/pangolin/utils/log/logger"
+	logrusWrapper "pangolin/app/pangolin/utils/log/logger/logrus"
+	zapWrapper "pangolin/app/pangolin/utils/log/logger/zap"
 	"github.com/pkg/errors"
-	"gitlab.p1staff.com/tsp/common/log/conf"
-	"gitlab.p1staff.com/tsp/common/log/logger"
-	logrusWrapper "gitlab.p1staff.com/tsp/common/log/logger/logrus"
-	zapWrapper "gitlab.p1staff.com/tsp/common/log/logger/zap"
 )
 
 var std logger.Logger

@@ -1,6 +1,6 @@
 package log
 
-import "gitlab.p1staff.com/tsp/common/log/conf"
+import "pangolin/app/pangolin/utils/log/conf"
 
 type Config = conf.Config
 type Core = conf.Core

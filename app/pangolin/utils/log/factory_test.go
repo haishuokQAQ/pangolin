@@ -1,9 +1,9 @@
 package log
 
 import (
+	"pangolin/app/pangolin/utils/log/conf"
 	"testing"
 
-	"gitlab.p1staff.com/tsp/common/log/conf"
 )
 
 func TestNewZapLogger(t *testing.T) {

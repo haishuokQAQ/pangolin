@@ -3,12 +3,11 @@ package zap
 import (
 	"context"
 	"fmt"
-	"log/syslog"
 	"os"
+	"pangolin/app/pangolin/utils/log/conf"
+	"pangolin/app/pangolin/utils/log/logger"
 
 	"github.com/pkg/errors"
-	"gitlab.p1staff.com/tsp/common/log/conf"
-	"gitlab.p1staff.com/tsp/common/log/logger"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -63,13 +62,6 @@ func NewZapWrapper(options *conf.Config) (*ZapWrapper, error) {
 			syncers = append(syncers, zapcore.AddSync(&hook))
 		}
 
-		if v.Type == conf.OutputTypeSyslog && v.Syslog != nil {
-			w, err := syslog.Dial(v.Syslog.Protocol, v.Syslog.Address, v.Syslog.GetFacility(), "")
-			if err != nil {
-				return nil, errors.Wrapf(err, "fail to connect %s using %s", v.Syslog.Address, v.Syslog.Protocol)
-			}
-			syncers = append(syncers, zapcore.AddSync(w))
-		}
 	}
 
 	core := zapcore.NewCore(

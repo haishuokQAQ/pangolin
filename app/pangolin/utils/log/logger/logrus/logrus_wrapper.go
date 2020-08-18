@@ -4,14 +4,13 @@ import (
 	"context"
 	"io"
 	"os"
+	"pangolin/app/pangolin/utils/log/conf"
+	"pangolin/app/pangolin/utils/log/logger"
 
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/sirupsen/logrus/hooks/syslog"
 	"gopkg.in/natefinch/lumberjack.v2"
 
-	"gitlab.p1staff.com/tsp/common/log/conf"
-	"gitlab.p1staff.com/tsp/common/log/logger"
 )
 
 type Close func()
@@ -65,15 +64,6 @@ func NewLogrusWrapper(options *conf.Config) (*LogrusWrapper, error) {
 
 			writers = append(writers, rotateFile)
 			closers = append(closers, rotateFile)
-		}
-
-		if v.Type == conf.OutputTypeSyslog && v.Syslog != nil {
-
-			hook, err := syslog.NewSyslogHook(v.Syslog.Protocol, v.Syslog.Address, v.Syslog.GetFacility(), "")
-			if err != nil {
-				return nil, errors.Wrapf(err, "fail to connect %s using %s", v.Syslog.Address, v.Syslog.Protocol)
-			}
-			logrusLogger.AddHook(hook)
 		}
 	}
 

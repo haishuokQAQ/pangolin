@@ -1,17 +1,13 @@
 package logrus
 
 import (
-	"context"
 	"os"
+	"pangolin/app/pangolin/utils/log/conf"
 	"testing"
 	"time"
 
-	"gitlab.p1staff.com/tsp/common/log/conf"
-	"gitlab.p1staff.com/tsp/common/model"
-	"gitlab.p1staff.com/tsp/common/tracing"
 
 	"github.com/stretchr/testify/suite"
-	tspctx "gitlab.p1staff.com/tsp/common/context"
 )
 
 type TestSuite1 struct {
@@ -103,7 +99,6 @@ func TestSyslogOutput(t *testing.T) {
 	wrapper.Infof("this is a message sent to syslog")
 
 	// /usr/local/var/log/remote.log:
-	// 2020-07-24T00:45:09+08:00 192.168.0.106 /Users/{username}/go/src/gitlab.p1staff.com/tsp/common/log/logger/logrus/debug.test[78878]: time="2020-07-24T00:45:09+08:00" level=info msg="this is a message sent to syslog"
 }
 
 func TestAllLevelLog(t *testing.T) {
@@ -160,26 +155,7 @@ func TestWithFields(t *testing.T) {
 	newwrapper.Infof("this message should with two fields k3, k4")
 }
 
-func TestWithTraceInCtx(t *testing.T) {
-	//assert := assert.New(t)
 
-	wrapper := newDebugTextLoggerWrapper()
-	defer wrapper.Close()
-
-	tracing.InitTracer("test")
-	_, ctx := tracing.StartSpanFromContext(context.Background(), "op")
-	ctx = tspctx.WithService(ctx, "restapi.sample.tsp")
-	ctx = tspctx.WithHostname(ctx, "sample.p1staff.com")
-	ctx = tspctx.WithIP(ctx, "127.0.0.1")
-
-	ctx = tspctx.WithUser(ctx, model.NewUser("1"))
-
-	wrapper.WithTraceInCtx(ctx).
-		Infof("this a message with trace info")
-
-	newwrapper := wrapper.WithTraceInCtx(ctx)
-	newwrapper.Infof("this is a another message with trace info")
-}
 
 func newDebugTextLoggerWrapper() *LogrusWrapper {
 	options := &conf.Config{

@@ -2,9 +2,8 @@ package logger
 
 import (
 	"context"
-
-	tspctx "gitlab.p1staff.com/tsp/common/context"
-	"gitlab.p1staff.com/tsp/common/tracing"
+	ctxUtil "pangolin/app/pangolin/utils/context"
+	"pangolin/app/pangolin/utils/tracing"
 )
 
 type Logger interface {
@@ -43,22 +42,19 @@ const (
 func CtxToMap(ctx context.Context) map[string]interface{} {
 	data := make(map[string]interface{}, 0)
 	if ctx != nil {
-		if span, ok := tspctx.GetTrace(ctx); ok {
+		if span, ok := ctxUtil.GetTrace(ctx); ok {
 			if traceID, spanID, ok := tracing.GetTraceIDAndSpanID(span); ok {
 				data[traceIDKey] = traceID
 				data[spanIDKey] = spanID
 			}
 		}
-		if user, ok := tspctx.GetUser(ctx); ok {
-			data[userIDKey] = user.GetID()
-		}
-		if service, ok := tspctx.GetService(ctx); ok {
+		if service, ok := ctxUtil.GetService(ctx); ok {
 			data[serviceKey] = service
 		}
-		if hostname, ok := tspctx.GetHostName(ctx); ok {
+		if hostname, ok := ctxUtil.GetHostName(ctx); ok {
 			data[hostnameKey] = hostname
 		}
-		if ip, ok := tspctx.GetIP(ctx); ok {
+		if ip, ok := ctxUtil.GetIP(ctx); ok {
 			data[ipKey] = ip
 		}
 	}
