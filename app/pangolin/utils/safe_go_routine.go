@@ -7,12 +7,12 @@ import (
 )
 
 // recoveryCallBack : 发生panic时回调
-func SafeGoroutine(f func(), recoveryCallBack ...RecoveryFallBackFunc) {
+func SafeGoroutine(f func(), recoveryCallBack ...func(interface{})) {
 	defer Recovery(recoveryCallBack...)
 	f()
 }
 
-func Recovery(funcs ...RecoveryFallBackFunc) {
+func Recovery(funcs ...func(interface{})) {
 	if r := recover(); r != nil {
 		recovered := false
 		if len(funcs) > 0 {
@@ -31,4 +31,4 @@ func Recovery(funcs ...RecoveryFallBackFunc) {
 	}
 }
 
-type RecoveryFallBackFunc func(interface{})
+

@@ -1,14 +1,14 @@
 package service
 
 import (
+	"log"
 	"pangolin/app/pangolin/model/db"
 	"pangolin/app/pangolin/utils"
-	"pangolin/app/pangolin/utils/log/logger"
 	"sync"
 )
 
 type Service struct {
-	logger        logger.Logger
+	logger        log.Logger
 	tunnelMapLock *sync.RWMutex
 	tunnelMap     map[uint64]*utils.SSHTunnel
 	portMap       map[int]bool

@@ -1,44 +1,18 @@
 package dal
 
 import (
-	"context"
 	"fmt"
 	"github.com/jinzhu/gorm"
-	ctxUtil "pangolin/app/pangolin/utils/context"
-	gormUtil "pangolin/app/pangolin/utils/gorm"
-	"pangolin/app/pangolin/utils/log"
-	"pangolin/app/pangolin/utils/log/logger"
+	"log"
 )
 
 var stdDBAccess *DBAccess
 
 type DBAccess struct {
 	db     *gorm.DB
-	Logger logger.Logger
+	Logger log.Logger
 }
 
-func GetDB(ctx context.Context) *gorm.DB {
-	var tx *gorm.DB
-	txObj, exists := ctxUtil.GetTransaction(ctx)
-	if exists {
-		tx = txObj
-	}
-	if tx != nil {
-		// tx 在初始化的时候已经注入过 trace logger
-		return tx
-	}
-	//_, exists = ctxUtil.GetTrace(ctx)
-	if exists {
-		// 存在 trace 对象，注入trace logger
-		// 克隆，不会克隆底层的 sqldb 对象，不用担心连接池问题
-		db := stdDBAccess.db.New()
-		db.SetLogger(gormUtil.NewGormLoggerWithLevel(stdDBAccess.Logger.WithTraceInCtx(ctx), log.LevelInfo))
-		return db
-	} else {
-		// 没有 trace 对象，不处理
-		return stdDBAccess.db
-	}
-}
 
 func (da *DBAccess) DB() *gorm.DB {
 	return da.db

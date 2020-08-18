@@ -1,14 +1,12 @@
 package dal
 
 import (
-	"context"
 	"pangolin/app/pangolin/model/db"
 )
 
-func (dba *DBAccess) ListAllConfig(ctx context.Context, pageNum, pageSize int) ([]*db.TunnelConfig, error) {
-	dbConn := GetDB(ctx)
+func (dba *DBAccess) ListAllConfig(pageNum, pageSize int) ([]*db.TunnelConfig, error) {
 	result := []*db.TunnelConfig{}
-	query := dbConn.Model(&db.TunnelConfig{})
+	query := dba.db.Model(&db.TunnelConfig{})
 	if pageNum > 0 && pageSize > 0 {
 		query = query.Offset((pageNum - 1) * pageSize)
 	}
@@ -22,11 +20,10 @@ func (dba *DBAccess) ListAllConfig(ctx context.Context, pageNum, pageSize int) (
 	return result, nil
 }
 
-func (dba *DBAccess) CreateConfig(ctx context.Context, config *db.TunnelConfig) error {
-	dbConn := GetDB(ctx)
-	return dbConn.Create(config).Error
+func (dba *DBAccess) CreateConfig(config *db.TunnelConfig) error {
+	return dba.db.Create(config).Error
 }
 
-func (dba *DBAccess) UpdateConfig(ctx context.Context, config *db.TunnelConfig) error {
-	return GetDB(ctx).Save(config).Error
+func (dba *DBAccess) UpdateConfig(config *db.TunnelConfig) error {
+	return  dba.db.Save(config).Error
 }

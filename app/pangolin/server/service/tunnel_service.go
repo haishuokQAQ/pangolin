@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"golang.org/x/crypto/ssh"
+	"google.golang.org/appengine/log"
 	"pangolin/app/pangolin/constant"
 	"pangolin/app/pangolin/model/db"
 	"pangolin/app/pangolin/utils"
@@ -21,7 +22,7 @@ func (srv *Service) CreateTunnel(ctx context.Context, config *db.TunnelConfig) e
 		return constant.GetErrorByErrorCode(result)
 	}
 	go utils.SafeGoroutine(tunnel.Start, func(i interface{}) {
-		srv.logger.Errorf("Error occurred when run tunner %+v", config.Id)
+		log.Errorf(ctx, "Error occurred when run tunner %+v", config.Id)
 
 	})
 	return nil
@@ -68,13 +69,13 @@ func (srv *Service) initTunnelFromConfig(ctx context.Context, config *db.TunnelC
 	case db.LogModePrivateKey:
 		key, err := utils.PrivateKeyString(config.PrivateKey)
 		if err != nil {
-			srv.logger.WithTraceInCtx(ctx).Errorf("Fail to parse private key.Error %+v", err)
+			log.Errorf(ctx, "Fail to parse private key.Error %+v", err)
 			return nil, err
 		}
 		tunnel.Config.Auth = []ssh.AuthMethod{key}
 		break
 	default:
-		srv.logger.WithTraceInCtx(ctx).Errorf("Illegal log mode %+v", config.LogMode)
+		log.Errorf(ctx, "Illegal log mode %+v", config.LogMode)
 		return nil, errors.New(fmt.Sprintf("Illegal log mode %+v", config.LogMode))
 	}
 	return tunnel, nil
