@@ -6,10 +6,13 @@ import (
 	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
 	"log"
+	"os"
 	"syscall"
 )
 
 const DefaultPort = 10086
+
+var FatalChannel = make(chan error, 10)
 
 type Server struct {
 }
@@ -28,9 +31,8 @@ func (server *Server) InitServer() {
 		log.Printf("Listening on host: %s. Actual pid is %d", addr, syscall.Getpid())
 	}
 	srv.RegisterOnShutdown(func() {
-		if err := dbAccess.DB().Close(); err != nil {
-			log.Fatalf("close database connection failed when server shutdown! err: %s", err)
-		}
+		<-FatalChannel
+		os.Exit(-1)
 	})
 	srv.ListenAndServe()
 }
