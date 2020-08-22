@@ -10,7 +10,7 @@ import (
 func (ctl *Controller) GetCurrentConfig(c *gin.Context) {
 	c.JSON(http.StatusOK, &rest.BasicResponse{
 		Meta: &rest.ResponseMeta{},
-		Data: ctl.srv.GetCurrentDBConfig(),
+		Data: ctl.Srv.GetCurrentDBConfig(),
 	})
 
 }
@@ -21,10 +21,12 @@ func (ctl *Controller) ConnectDB(c *gin.Context) {
 		_ = c.Error(err)
 		return
 	}
-	err := ctl.srv.ConnectDatabase(conf)
+	err := ctl.Srv.ConnectDatabase(conf)
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
-	c.JSON(http.StatusOK, rest.BasicResponse{})
+	c.JSON(http.StatusOK, rest.BasicResponse{
+		Meta: &rest.ResponseMeta{},
+	})
 }

@@ -6,13 +6,26 @@ import (
 	"fmt"
 	"golang.org/x/crypto/ssh"
 	"google.golang.org/appengine/log"
+	"net"
 	"pangolin/app/pangolin/constant"
 	"pangolin/app/pangolin/model/db"
 	"pangolin/app/pangolin/utils"
 	"time"
 )
 
-func (srv *Service) CreateTunnel(ctx context.Context, config *db.TunnelConfig) error {
+func (srv *Service) CreateTunnelByConfigId(ctx context.Context, id uint64) error {
+	config, err := srv.GetConfigById(ctx, id)
+	if err != nil {
+		return err
+	}
+	err = srv.createTunnel(ctx, config)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (srv *Service) createTunnel(ctx context.Context, config *db.TunnelConfig) error {
 	tunnel, err := srv.initTunnelFromConfig(ctx, config)
 	if err != nil {
 		return err
@@ -31,10 +44,10 @@ func (srv *Service) CreateTunnel(ctx context.Context, config *db.TunnelConfig) e
 func (srv *Service) addIntoTunnelMap(config *db.TunnelConfig, sshTunnel *utils.SSHTunnel) int {
 	srv.tunnelMapLock.Lock()
 	defer srv.tunnelMapLock.Unlock()
-	if _, ok := srv.portMap[config.LocalPort]; !ok {
+	if _, ok := srv.portMap[config.LocalPort]; ok {
 		return -1
 	}
-	if _, ok := srv.tunnelMap[config.Id]; !ok {
+	if _, ok := srv.tunnelMap[config.Id]; ok {
 		return -2
 	}
 	srv.portMap[config.LocalPort] = true
@@ -61,6 +74,9 @@ func (srv *Service) initTunnelFromConfig(ctx context.Context, config *db.TunnelC
 	tunnel.Config = &ssh.ClientConfig{
 		Timeout: 5 * time.Second,
 		User:    config.UserName,
+		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+			return nil
+		},
 	}
 	switch config.LogMode {
 	case db.LogModePassword:
@@ -103,4 +119,12 @@ func (srv *Service) DestroyTunnel(ctx context.Context, configId uint64) error {
 	delete(srv.portMap, tunnel.Local.Port)
 	tunnel.Shutdown()
 	return nil
+}
+
+func (srv *Service) GetStatistic(ctx context.Context, id uint64) (map[string]*utils.FlowStatistic, error) {
+	tunnel, ok := srv.tunnelMap[id]
+	if !ok {
+		return nil, errors.New("Not found!")
+	}
+	return tunnel.GetStatistic(), nil
 }

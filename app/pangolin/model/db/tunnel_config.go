@@ -23,6 +23,5 @@ type TunnelConfig struct {
 	PrivateKey string     `json:"private_key"`
 	CreatedAt  time.Time  `json:"created_at"`
 	UpdatedAt  time.Time  `json:"updated_at"`
-	Deleted    int        `json:"deleted"`
 	DeletedAt  *time.Time `json:"deleted_at"`
 }

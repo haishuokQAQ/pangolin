@@ -3,6 +3,7 @@ package dal
 import (
 	"fmt"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"
 )
 
@@ -12,7 +13,6 @@ type DBAccess struct {
 	db     *gorm.DB
 	Logger log.Logger
 }
-
 
 func (da *DBAccess) DB() *gorm.DB {
 	return da.db

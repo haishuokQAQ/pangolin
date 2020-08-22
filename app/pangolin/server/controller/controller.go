@@ -5,5 +5,5 @@ import (
 )
 
 type Controller struct {
-	srv *service.Service
+	Srv *service.Service
 }
